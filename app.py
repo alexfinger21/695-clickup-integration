@@ -1,3 +1,10 @@
+
+users = {
+    "admin": "rev",
+    "jerry": "123",
+    "gerald": "screw-jerry"
+}
+
 def acceptInput():
     command = input()
     match command:
@@ -16,27 +23,26 @@ def acceptInput():
 
 # Dummy login 
 def getUser(user, pw):
-    match user:
-        case "admin":
-            if pw == "rev":
-                return True
-            else:
-                print("Invalid Password")
-                return False
-        case "user":
-            if pw == "pw":
-                return True
-            else: 
-                print("Invalid password")
-                return False
-        case _:
-            print("Invalid username")
+    if username in users:
+        if pw == users[username]:
+            print("Successful login")
+            return True
+        else:
+            print("Invalid username or password")
+            return False
+    else:
+        print("Invalid username or password")
+        return False
 
 username = input("Username: ")
 pw = input("Password: ")
 
-getUser(username, pw)
+if getUser(username, pw) == True:
+    print('Enter "help" to view commands')
+    while acceptInput():
+        print("...")
+else:
+    username = input("Username: ")
+    pw = input("Password: ")
 
-print('Enter "help" to view commands')
-while acceptInput():
-    print("...")
+    getUser(username, pw)
