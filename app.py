@@ -1,4 +1,3 @@
-
 users = {
     "admin": "rev",
     "jerry": "123",
@@ -34,15 +33,23 @@ def getUser(user, pw):
         print("Invalid username or password")
         return False
 
-username = input("Username: ")
-pw = input("Password: ")
-
-if getUser(username, pw) == True:
-    print('Enter "help" to view commands')
-    while acceptInput():
-        print("...")
-else:
+def login():
     username = input("Username: ")
     pw = input("Password: ")
 
-    getUser(username, pw)
+    if getUser(username, pw) == True:
+        loggedIn()
+    else:
+        login()
+
+
+def loggedIn():
+    print('Enter "help" to view commands')
+    while acceptInput():
+        print("...")
+
+
+username = input("Username: ")
+pw = input("Password: ")
+
+getUser(username, pw)
