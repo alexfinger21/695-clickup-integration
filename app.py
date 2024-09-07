@@ -1,3 +1,5 @@
+from api.api import display_tasks
+
 def acceptInput():
     command = input()
     match command:
@@ -13,7 +15,11 @@ def acceptInput():
             print("Command not recognized")
             return True
 
+
+display_tasks("googly moogly", {"in progress", "to do"})
+"""
 username = input("Username: ")
 print('Enter "help" to view commands')
 while acceptInput():
     print("...")
+"""
