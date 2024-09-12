@@ -1,3 +1,5 @@
+import os
+
 # imports needed to make web requests
 import requests
 import urllib
@@ -45,7 +47,7 @@ if __name__ == "__main__":
         print('no display found. Using :0.0')
         os.environ.__setitem__('DISPLAY', ':0.0')
 
-    mypath = "/home/oleksandr/Documents/clickup-695-api/"
+    mypath = os.path.dirname(os.path.realpath(__file__)) + "/"
 
     timeformat = "%Y-%m-%d %H:%M:%S"
     key_queue = queue.Queue()
