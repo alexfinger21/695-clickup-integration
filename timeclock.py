@@ -23,6 +23,9 @@ import datetime
 from tkinter import *
 from tkinter import ttk
 
+# import clickup API
+import api
+
 def disable_event():
     pass
 
@@ -107,6 +110,11 @@ if __name__ == "__main__":
     G_win.configure(cursor="none", background="tan4")
     G_win.transient(G_main)
     G_win.overrideredirect(1)
+
+    
+    
+    footer_label = Label(G_main, text="Tasks:", bg="black", fg="white", font='Arial 11', anchor='center')
+    footer_label.place(relx=0.5, rely=0.8, anchor='s')
 
     for r in range(0, 3):
         for c in range(0,16):
@@ -218,6 +226,7 @@ if __name__ == "__main__":
 
                 if r == grow and c == gcol:
                     if "ClockIn" not in G_member:
+                        api.funcs.display_tasks(G_member["email"], ("To do", "In Progression"))
                         G_member["ClockIn"] = datetime.datetime.now().strftime(timeformat)
                         child['fg'] = "yellow"
                         print(G_member["ClockIn"] + " CLOCK IN:  " + G_member["StudentFirst"])
@@ -235,4 +244,3 @@ if __name__ == "__main__":
                     f = open(mypath + "roster.json", "w")
                     f.write(json.dumps(G_roster, indent=4))
                     f.close()
-
