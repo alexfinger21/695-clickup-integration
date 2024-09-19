@@ -24,7 +24,7 @@ from tkinter import *
 from tkinter import ttk
 
 # import clickup API
-import api
+import api.funcs
 
 def disable_event():
     pass
@@ -226,7 +226,7 @@ if __name__ == "__main__":
 
                 if r == grow and c == gcol:
                     if "ClockIn" not in G_member:
-                        api.funcs.display_tasks(G_member["email"], ("To do", "In Progression"))
+                        api.funcs.display_tasks(G_member["StudentEmail"], ("To do", "In Progression"))
                         G_member["ClockIn"] = datetime.datetime.now().strftime(timeformat)
                         child['fg'] = "yellow"
                         print(G_member["ClockIn"] + " CLOCK IN:  " + G_member["StudentFirst"])
