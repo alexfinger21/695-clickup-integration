@@ -53,8 +53,7 @@
         "Leadership Position": "Strategy+Scouting",
         "Leadership Applied": "Strategy+Scouting",
         "School": "BHS",
-        "StudentEmail": "cdx9933@gmail.com",
-        "ClockIn": "2024-09-07 11:06:17"
+        "StudentEmail": "cdx9933@gmail.com"
     },
     {
         "BarcodeID": "213",
@@ -209,7 +208,7 @@
         "Leadership Applied": "Strategy+Scouting",
         "School": "BHS",
         "StudentEmail": "26ddana@beachwoodstudents.org, thedarthdot@gmail.com",
-        "ClockIn": "2024-09-19 19:45:12"
+        "ClockIn": "2024-09-19 21:08:18"
     },
     {
         "BarcodeID": "233",
@@ -504,5 +503,19 @@
         "Leadership Applied": "",
         "School": "AHS",
         "StudentEmail": "27venarra555@gmail.com"
+    },
+    {
+        "BarcodeID": "189",
+        "StudentLast": "Alpha",
+        "StudentFirst": "Sigma",
+        "jpk": "",
+        "grow": 2,
+        "gcol": 14,
+        "T-Shirt2024": "",
+        "Survey2024": "",
+        "Leadership Position": "",
+        "Leadership Applied": "",
+        "School": "",
+        "StudentEmail": "superalpha@gmail.org"
     }
 ]

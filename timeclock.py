@@ -106,7 +106,7 @@ if __name__ == "__main__":
     imagelab = Label(G_main, image=image, borderwidth=0)
 
     G_win = Toplevel(G_main)
-    G_win.geometry("720x98") # pi screen is 800x480
+    G_win.geometry("1000x120") # pi screen is 800x480
     G_win.configure(cursor="none", background="tan4")
     G_win.transient(G_main)
     G_win.overrideredirect(1)
@@ -122,6 +122,7 @@ if __name__ == "__main__":
             for member in G_roster:
                 if member["grow"] == r + 1 and member["gcol"] == c + 1:
                     mtxt = member["StudentFirst"]
+                    print(member["StudentFirst"])
                     #mtxt = member["StudentFirst"][0] + member["StudentLast"][0]
                     if "ClockIn" in member:
                         fgcolor = "yellow"
@@ -226,7 +227,7 @@ if __name__ == "__main__":
 
                 if r == grow and c == gcol:
                     if "ClockIn" not in G_member:
-                        api.funcs.display_tasks(G_member["StudentEmail"], ("To do", "In Progression"))
+                        api.funcs.display_tasks(G_member["StudentEmail"], ("in progress",))
                         G_member["ClockIn"] = datetime.datetime.now().strftime(timeformat)
                         child['fg'] = "yellow"
                         print(G_member["ClockIn"] + " CLOCK IN:  " + G_member["StudentFirst"])
