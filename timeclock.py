@@ -114,15 +114,11 @@ if __name__ == "__main__":
     imagelab = Label(G_main, image=image, borderwidth=0)
 
     G_win = Toplevel(G_main)
-    G_win.geometry("799x109+40+200") # pi screen is 800x480
+    G_win.geometry("799x109+40+175") # pi screen is 800x480
     G_win.configure(cursor="none", background="tan4")
     G_win.transient(G_main)
     G_win.overrideredirect(1)
 
-    taskText = "Tasks:"
-    
-    footer_label = Label(G_main, text=taskText, bg="black", fg="white", font='Arial 11', anchor='center')
-    footer_label.place(relx=0.5, rely=0.8, anchor='s')
 
     for r in range(0, 3):
         for c in range(0,16):
@@ -217,6 +213,9 @@ if __name__ == "__main__":
             if member["BarcodeID"] == user_id:
                 user_found = True
                 G_member = member
+                footer_label = Label(G_main, text=G_member["StudentFirst"], bg="black", fg="white", font='Arial 11', anchor='center')
+                footer_label.place(relx=0.5, rely=0.8, anchor='s')
+
                 grow = member["grow"]
                 gcol = member["gcol"]
                 break
@@ -239,7 +238,8 @@ if __name__ == "__main__":
                         tasksText = "Tasks:"
                         
                         for email in emails:
-                            tasksText += api.funcs.display_tasks(email, ("To do", "In Progression"))
+                            print("EMAIL IS:" + email)
+                            tasksText += api.funcs.display_tasks(email, ("To do", "In Progression")) or ""
                         
                         G_member["ClockIn"] = datetime.datetime.now().strftime(timeformat)
                         child['fg'] = "yellow"
