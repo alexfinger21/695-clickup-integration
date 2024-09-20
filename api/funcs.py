@@ -1,6 +1,9 @@
 import json
 from urllib.request import Request, urlopen
 
+print("\n\n\nFUNCS IS LOADED")
+print(__file__) 
+
 def display_tasks(user: str, statuses: set) -> str:
     display_url = f"https://api.clickup.com/api/v2/list/901101497371/task?{'&'.join(['statuses[]=' + x.replace(' ', '+') for x in statuses])}&page=0"
     
