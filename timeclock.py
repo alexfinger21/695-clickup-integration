@@ -103,7 +103,8 @@ if __name__ == "__main__":
 
     G_main = Tk()
     G_main.configure(cursor="none", background="black")
-    G_main.attributes("-fullscreen", True)
+    #G_main.attributes("-fullscreen", True)
+    G_main.geometry("800x480")
     G_main.bind("<KeyPress>", keydown)
     clock = Label(G_main, text="00:00:00", bg="black", anchor='w')
     who = Label(G_main, text="Who's here today", fg="SteelBlue1", bg="black", font='Arial 20 bold', anchor='w')
@@ -113,7 +114,7 @@ if __name__ == "__main__":
     imagelab = Label(G_main, image=image, borderwidth=0)
 
     G_win = Toplevel(G_main)
-    G_win.geometry("799x109") # pi screen is 800x480
+    G_win.geometry("799x109+40+200") # pi screen is 800x480
     G_win.configure(cursor="none", background="tan4")
     G_win.transient(G_main)
     G_win.overrideredirect(1)
@@ -150,8 +151,6 @@ if __name__ == "__main__":
         # run this loop every 100 msec for timely barcode clock in/out processing
         # keep window at the foreground
         #G_win.grab_set()
-        G_win.geometry("+40+60")
-
         G_main.update()
 
         time.sleep(0.1)
@@ -237,7 +236,7 @@ if __name__ == "__main__":
                         emails = getStudentEmails(G_member)
                         
                         # display all tasks for all emails for student
-                            tasksText = "Tasks:"
+                        tasksText = "Tasks:"
                         
                         for email in emails:
                             tasksText += api.funcs.display_tasks(email, ("To do", "In Progression"))
