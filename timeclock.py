@@ -24,7 +24,7 @@ from tkinter import *
 from tkinter import ttk
 
 # import clickup API
-import api
+import api.funcs
 
 def getStudentEmails(G_member):
     return G_member["StudentEmail"].split(", ")
