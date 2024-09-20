@@ -238,7 +238,6 @@ if __name__ == "__main__":
                         tasksText = "Tasks:"
                         
                         for email in emails:
-                            print("EMAIL IS:" + email)
                             tasksText += api.funcs.display_tasks(email, ("To do", "In Progression")) or ""
                         
                         G_member["ClockIn"] = datetime.datetime.now().strftime(timeformat)
