@@ -126,6 +126,7 @@ if __name__ == "__main__":
             for member in G_roster:
                 if member["grow"] == r + 1 and member["gcol"] == c + 1:
                     mtxt = member["StudentFirst"]
+                    print(member["StudentFirst"])
                     #mtxt = member["StudentFirst"][0] + member["StudentLast"][0]
                     if "ClockIn" in member:
                         fgcolor = "yellow"
