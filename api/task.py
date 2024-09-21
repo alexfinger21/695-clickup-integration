@@ -1,3 +1,4 @@
+# NOT USED
 from urllib import Request
 
 class task:

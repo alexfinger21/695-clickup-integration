@@ -29,6 +29,9 @@ import api.funcs
 def getStudentEmails(G_member) -> set:
     return set(G_member["StudentEmail"].split(", "))
 
+def sortTasks(t):
+    return 0 if t.due_date else 1
+
 def disable_event():
     pass
 
@@ -63,6 +66,10 @@ if __name__ == "__main__":
     clocky = 1
     clockdy = 2
     clockcolor = 'blue'
+
+    task_queue = queue.Queue()
+
+    user_name = ""
 
     # set our credentials to access google docs
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -119,15 +126,21 @@ if __name__ == "__main__":
     #NOTE: Variables
     current_user=StringVar()
     todo_tasks=StringVar()
+    todo_name=StringVar()
     inprogress_tasks=StringVar()
+    inprogress_name=StringVar()
 
     #NOTE: Task Display UI
     tasks_header = Label(G_main, textvariable=current_user, bg="black", fg="white", font='Arial 11', anchor='center')
-    tasks_header.place(relx=0.5, rely=0.42, anchor='s')
+    tasks_header.place(relx=0.5, rely=0.45, anchor='s')
+    inprogress_header = Label(G_main, textvariable=inprogress_name, bg="black", fg="#EE5E99", font='Arial 11', anchor='center')
+    inprogress_header.place(relx=0.2, rely=0.465)
     inprogress_label = Label(G_main, textvariable=inprogress_tasks, bg="black", fg="#EE5E99", font='Arial 11', anchor='e', justify="left", wraplength=370)
-    inprogress_label.place(relx=0.01, rely=0.5)
-    todo_label = Label(G_main, textvariable=todo_tasks, bg="black", fg="#dddddd", font='Arial 11', anchor='e', justify="left", wraplength=360)
-    todo_label.place(relx=0.55, rely=0.5)
+    inprogress_label.place(relx=0.01, rely=0.52)
+    todo_header = Label(G_main, textvariable=todo_name, bg="black", fg="#c1c1c1", font='Arial 11', anchor='center')
+    todo_header.place(relx=0.72, rely=0.465)
+    todo_label = Label(G_main, textvariable=todo_tasks, bg="black", fg="#c1c1c1", font='Arial 11', anchor='e', justify="left", wraplength=360)
+    todo_label.place(relx=0.55, rely=0.52)
     for r in range(0, 3):
         for c in range(0,16):
             mtxt = ""
@@ -162,7 +175,6 @@ if __name__ == "__main__":
         G_main.update()
 
         time.sleep(0.1)
-
 
         #NOTE - change later
         #screensave = True
@@ -215,8 +227,16 @@ if __name__ == "__main__":
                 print(key_queue.empty())
                 user_id = user_id + key_queue.get()
 
+        # update tasks based on queue
+
+        if (not task_queue.empty()):
+            todo_tasks.set(task_queue.get_nowait())
+            todo_name.set(task_queue.get_nowait())
+            inprogress_tasks.set(task_queue.get_nowait())
+            inprogress_name.set(task_queue.get_nowait())
+
         # user id must be 3 digits, so just loop if nothing to look up yet
-        print("UID: " + user_id)
+        # print("UID: " + user_id)
         if len(user_id) != 3:
             continue
 
@@ -243,11 +263,50 @@ if __name__ == "__main__":
                 if r == grow and c == gcol:
                     if "ClockIn" not in G_member:
                         #set user as current user
+                        #remove current user
+                        current_user.set("")
+                        #reset task display
+                        todo_tasks.set("")
+                        inprogress_tasks.set("")
+                        #reset headers
+                        todo_name.set("")
+                        inprogress_name.set("")
+                        user_name = G_member['StudentFirst']
                         current_user.set(f"Tasks for {G_member['StudentFirst']}")
                         # display all tasks for all emails for student
-                        tasks = api.funcs.display_tasks(getStudentEmails(G_member), {"to do", "in progress"}) or ""
-                        todo_tasks.set("\n".join([str(task) for task in tasks if task.status.get("status")=="to do"]))
-                        inprogress_tasks.set("\n".join([str(task) for task in tasks if task.status.get("status")=="in progress"]))
+                        def task_thread():
+                            user = user_name
+                            tasks = sorted(api.funcs.display_tasks(getStudentEmails(G_member), {"to do", "in progress"}) or "", key=sortTasks)
+
+                            if (user == user_name):
+                                
+                                while (not task_queue.empty()):
+                                    task_queue.get_nowait()
+                            else:
+                                return
+
+                            todo_tasks_str = "\n".join([str(task) for task in tasks if task.status.get("status")=="to do"])
+                            task_queue.put_nowait(todo_tasks_str)
+
+                            #todo_tasks.set()
+                            if(todo_tasks_str != ""):
+                                #todo_name.set("To Do")
+                                task_queue.put_nowait("To Do")
+                            else:
+                                task_queue.put_nowait("")
+
+                            inprogress_tasks_str = "\n".join([str(task) for task in tasks if task.status.get("status")=="in progress"])
+                            task_queue.put_nowait(inprogress_tasks_str)
+
+                            #inprogress_tasks.set("\n".join([str(task) for task in tasks if task.status.get("status")=="in progress"]))
+                            if(inprogress_tasks_str != ""):
+                                #inprogress_name.set("In Progress")
+                                task_queue.put_nowait("In Progress")
+                            else:
+                                task_queue.put_nowait("")
+
+                        new_thread = threading.Thread(target=task_thread)
+                        new_thread.start()
 
                         G_member["ClockIn"] = datetime.datetime.now().strftime(timeformat)
                         child['fg'] = "yellow"
@@ -258,6 +317,9 @@ if __name__ == "__main__":
                         #reset task display
                         todo_tasks.set("")
                         inprogress_tasks.set("")
+                        #reset headers
+                        todo_name.set("")
+                        inprogress_name.set("")
                         G_member["ClockOut"] = datetime.datetime.now().strftime(timeformat)
                         delta = datetime.datetime.strptime(G_member["ClockOut"], timeformat) - datetime.datetime.strptime(G_member["ClockIn"], timeformat)
                         l = G_member["BarcodeID"] + "\t" + G_member["StudentFirst"] + "\t" + G_member["ClockIn"] + "\t" + G_member["ClockOut"] + "\t" + str(delta.total_seconds()) + "\r\n"
