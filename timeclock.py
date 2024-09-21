@@ -77,10 +77,10 @@ if __name__ == "__main__":
     client = gspread.authorize(creds)
 
     # open workbook
-    G_workbook = client.open("Copy of Students")
+    G_workbook = client.open("Roster")
 
     # get workbook tabs
-    G_sheet_roster = G_workbook.worksheet("Students")
+    G_sheet_roster = G_workbook.worksheet("Roster")
     #G_sheet_timelog = G_workbook.worksheet("TimeLog")
 
     # roster memory structure
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     arr = rows * [[0] * cols]
     G_main = Tk()
     G_main.configure(cursor="none", background="black")
-    #G_main.attributes("-fullscreen", True)
+    G_main.attributes("-fullscreen", True)
     G_main.geometry("800x480")
     G_main.bind("<KeyPress>", keydown)
     clock = Label(G_main, text="00:00:00", bg="black", anchor='w')
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     imagelab = Label(G_main, image=image, borderwidth=0)
 
     G_win = Toplevel(G_main)
-    G_win.geometry("799x114") # pi screen is 800x480
+    G_win.geometry("769x97") # pi screen is 800x480
     G_win.configure(cursor="none", background="tan4")
     G_win.transient(G_main)
     G_win.overrideredirect(1)
@@ -171,7 +171,7 @@ if __name__ == "__main__":
         #G_win.grab_set()
 
         #reset grid positioning
-        G_win.geometry(f"+{G_main.winfo_x()}+{G_main.winfo_y() + 60}")
+        G_win.geometry(f"+{G_main.winfo_x() + 14}+{G_main.winfo_y() + 60}")
         G_main.update()
 
         time.sleep(0.1)
