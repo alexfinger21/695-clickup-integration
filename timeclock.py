@@ -98,9 +98,6 @@ if __name__ == "__main__":
 
     rows, cols = (3, 16)
     arr = rows * [[0] * cols]
-
-    
-
     G_main = Tk()
     G_main.configure(cursor="none", background="black")
     #G_main.attributes("-fullscreen", True)
@@ -119,7 +116,18 @@ if __name__ == "__main__":
     G_win.transient(G_main)
     G_win.overrideredirect(1)
 
+    #NOTE: Variables
+    current_user=StringVar()
+    todo_tasks=StringVar()
+    inprogress_tasks=StringVar()
 
+    #NOTE: Task Display UI
+    tasks_header = Label(G_main, textvariable=current_user, bg="black", fg="white", font='Arial 11', anchor='center')
+    tasks_header.place(relx=0.5, rely=0.42, anchor='s')
+    inprogress_label = Label(G_main, textvariable=inprogress_tasks, bg="black", fg="#EE5E99", font='Arial 11', anchor='e', justify="left", wraplength=370)
+    inprogress_label.place(relx=0.01, rely=0.5)
+    todo_label = Label(G_main, textvariable=todo_tasks, bg="black", fg="#dddddd", font='Arial 11', anchor='e', justify="left", wraplength=360)
+    todo_label.place(relx=0.55, rely=0.5)
     for r in range(0, 3):
         for c in range(0,16):
             mtxt = ""
@@ -234,14 +242,22 @@ if __name__ == "__main__":
 
                 if r == grow and c == gcol:
                     if "ClockIn" not in G_member:
-                        
+                        #set user as current user
+                        current_user.set(f"Tasks for {G_member['StudentFirst']}")
                         # display all tasks for all emails for student
-                        tasksText = api.funcs.display_tasks(getStudentEmails(G_member), ("To do", "In Progression")) or ""
-                        
+                        tasks = api.funcs.display_tasks(getStudentEmails(G_member), {"to do", "in progress"}) or ""
+                        todo_tasks.set("\n".join([str(task) for task in tasks if task.status.get("status")=="to do"]))
+                        inprogress_tasks.set("\n".join([str(task) for task in tasks if task.status.get("status")=="in progress"]))
+
                         G_member["ClockIn"] = datetime.datetime.now().strftime(timeformat)
                         child['fg'] = "yellow"
                         print(G_member["ClockIn"] + " CLOCK IN:  " + G_member["StudentFirst"])
                     else:
+                        #remove current user
+                        current_user.set("")
+                        #reset task display
+                        todo_tasks.set("")
+                        inprogress_tasks.set("")
                         G_member["ClockOut"] = datetime.datetime.now().strftime(timeformat)
                         delta = datetime.datetime.strptime(G_member["ClockOut"], timeformat) - datetime.datetime.strptime(G_member["ClockIn"], timeformat)
                         l = G_member["BarcodeID"] + "\t" + G_member["StudentFirst"] + "\t" + G_member["ClockIn"] + "\t" + G_member["ClockOut"] + "\t" + str(delta.total_seconds()) + "\r\n"
