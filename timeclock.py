@@ -26,8 +26,8 @@ from tkinter import ttk
 # import clickup API
 import api.funcs
 
-def getStudentEmails(G_member):
-    return G_member["StudentEmail"].split(", ")
+def getStudentEmails(G_member) -> set:
+    return set(G_member["StudentEmail"].split(", "))
 
 def disable_event():
     pass
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     imagelab = Label(G_main, image=image, borderwidth=0)
 
     G_win = Toplevel(G_main)
-    G_win.geometry("799x109+40+175") # pi screen is 800x480
+    G_win.geometry("799x114") # pi screen is 800x480
     G_win.configure(cursor="none", background="tan4")
     G_win.transient(G_main)
     G_win.overrideredirect(1)
@@ -148,9 +148,13 @@ if __name__ == "__main__":
         # run this loop every 100 msec for timely barcode clock in/out processing
         # keep window at the foreground
         #G_win.grab_set()
+
+        #reset grid positioning
+        G_win.geometry(f"+{G_main.winfo_x()}+{G_main.winfo_y() + 60}")
         G_main.update()
 
         time.sleep(0.1)
+
 
         #NOTE - change later
         #screensave = True
@@ -214,8 +218,6 @@ if __name__ == "__main__":
             if member["BarcodeID"] == user_id:
                 user_found = True
                 G_member = member
-                footer_label = Label(G_main, text=G_member["StudentFirst"], bg="black", fg="white", font='Arial 11', anchor='center')
-                footer_label.place(relx=0.5, rely=0.8, anchor='s')
 
                 grow = member["grow"]
                 gcol = member["gcol"]
@@ -232,14 +234,9 @@ if __name__ == "__main__":
 
                 if r == grow and c == gcol:
                     if "ClockIn" not in G_member:
-                        # get array of all student emails
-                        emails = getStudentEmails(G_member)
                         
                         # display all tasks for all emails for student
-                        tasksText = "Tasks:"
-                        
-                        for email in emails:
-                            tasksText += api.funcs.display_tasks(email, ("To do", "In Progression")) or ""
+                        tasksText = api.funcs.display_tasks(getStudentEmails(G_member), ("To do", "In Progression")) or ""
                         
                         G_member["ClockIn"] = datetime.datetime.now().strftime(timeformat)
                         child['fg'] = "yellow"
