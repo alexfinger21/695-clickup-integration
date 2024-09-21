@@ -37,7 +37,7 @@ def display_tasks(emails: set, statuses: set) -> str:
         "GET",
         display_url, 
         data=json.dumps({"test": True}).encode(), 
-        headers={"Authorization": "pk_14742653_2DD8K5CYR2LMRSZ7TWVE8POG2FB0EVKB"}
+        headers={"Authorization": CLICKUP_API_KEY}
     ) #test if login required works
     apiFINDReq = apiFINDReq.prepare()
 
