@@ -276,7 +276,7 @@ if __name__ == "__main__":
                         # display all tasks for all emails for student
                         def task_thread():
                             user = user_name
-                            tasks = sorted(api.funcs.display_tasks(getStudentEmails(G_member), {"to do", "in progress"}) or "", key=sortTasks)
+                            tasks = sorted(api.funcs.display_tasks(getStudentEmails(G_member), {"in progress", "to do"}, G_member["Survey2024"]) or "", key=sortTasks)
 
                             if (user == user_name):
                                 

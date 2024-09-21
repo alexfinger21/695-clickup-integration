@@ -10,6 +10,12 @@ load_dotenv()
 s = Session() # speeds up the requests
 CLICKUP_API_KEY = os.getenv("CLICKUP_API_KEY")
 
+subteams = {
+    "Fabrication": {"901104858222", "901101495836"},
+    "Design+CAD": {"901101495833", "901104890072"},
+    "Software": {"901101495817", "901104858222"},
+    "Strategy+Scouting": {"901101497371"}
+}
 
 class task:
     def __init__(self, name, status, assignees, due_date):
@@ -23,15 +29,13 @@ class task:
         #return "task here!"
         return (f"({self.due_date}) " if self.due_date else "") + self.name
 
-def display_tasks(emails: set, statuses: set) -> str:
+def display_tasks(emails: set, statuses: set, subteam: str) -> str:
+    print(subteam)
     if(len(emails) == 0):
         warnings.warn("User has empty email")
         return
 
-    display_url = f"https://api.clickup.com/api/v2/list/901101497371/task?{'&'.join(['statuses[]=' + x.replace(' ', '+') for x in statuses])}&page=0"
-
-    
-    print(display_url)
+    display_url = f"https://api.clickup.com/api/v2/team/9011117189/task?{'&'.join(['statuses[]=' + x.replace(' ', '+') for x in statuses])}&lists[]={'&lists[]='.join(subteams[subteam])}&page=0"
 
     apiFINDReq = Request(
         "GET",
