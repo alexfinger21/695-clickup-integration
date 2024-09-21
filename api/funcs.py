@@ -1,9 +1,14 @@
 import json
+import os
 from requests import Request, Session
 import warnings
 import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 s = Session() # speeds up the requests
+CLICKUP_API_KEY = os.getenv("CLICKUP_API_KEY")
 
 
 class task:
