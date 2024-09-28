@@ -1,1 +1,7 @@
 .env
+.venv
+*.log
+__pycache__
+roster.json
+client_secret_695.json
+.venvinstructions.txt

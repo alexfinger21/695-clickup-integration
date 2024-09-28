@@ -1,3 +1,5 @@
+from api.api import display_tasks
+
 def acceptInput():
     command = input()
     match command:
@@ -40,3 +42,4 @@ getUser(username, pw)
 print('Enter "help" to view commands')
 while acceptInput():
     print("...")
+"""
