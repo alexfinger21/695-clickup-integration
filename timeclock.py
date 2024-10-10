@@ -320,6 +320,12 @@ if __name__ == "__main__":
                             user = user_name
                             tasks = sorted(api.funcs.display_tasks(getStudentEmails(G_member), {"in progress", "to do"}, G_member["Survey2024"]) or "", key=sortTasks)
 
+                            if (len(tasks) == 0):
+                                print('no tasks')
+                                task_queue.put_nowait("TASKS_LOADED")
+
+                                return
+
                             if user == user_name:
                                 while not task_queue.empty():
                                     task_queue.get_nowait()
@@ -329,8 +335,8 @@ if __name__ == "__main__":
                             todo_tasks_str = "\n".join([str(task) for task in tasks if task.status.get("status")=="to do"])
                             inprogress_tasks_str = "\n".join([str(task) for task in tasks if task.status.get("status")=="in progress"])
 
-                            task_queue.put_nowait(("TO_DO", todo_tasks_str if todo_tasks_str else "To Do: none"))
-                            task_queue.put_nowait(("IN_PROGRESS", inprogress_tasks_str if inprogress_tasks_str else "In Progress: none"))
+                            task_queue.put_nowait(("TO_DO", todo_tasks_str if todo_tasks_str else "To Do: None"))
+                            task_queue.put_nowait(("IN_PROGRESS", inprogress_tasks_str if inprogress_tasks_str else "In Progress: None"))
                             task_queue.put_nowait("TASKS_LOADED")
                             
 
@@ -356,16 +362,16 @@ if __name__ == "__main__":
                         G_member["ClockOut"] = datetime.datetime.now().strftime(timeformat)
                         delta = datetime.datetime.strptime(G_member["ClockOut"], timeformat) - datetime.datetime.strptime(G_member["ClockIn"], timeformat)
                         l = G_member["BarcodeID"] + "\t" + G_member["StudentFirst"] + "\t" + G_member["ClockIn"] + "\t" + G_member["ClockOut"] + "\t" + str(delta.total_seconds()) + "\r\n"
-                        f = open(mypath + "logs/{d.year}{d.month:02}{d.day:02}.log".format(d=datetime.datetime.now()), "a")
-                        f.write(l)
-                        f.close()
+                        #f = open(mypath + "logs/{d.year}{d.month:02}{d.day:02}.log".format(d=datetime.datetime.now()), "a")
+                        #f.write(l)
+                        #f.close()
                         child['fg'] = "gray20"
                         print(G_member["ClockOut"] + " CLOCK OUT: " + G_member["StudentFirst"])
                         del G_member["ClockIn"]
                         del G_member["ClockOut"]
 
-                    f = open(mypath + "roster.json", "w")
-                    f.write(json.dumps(G_roster, indent=4))
-                    f.close()
+                    #f = open(mypath + "roster.json", "w")
+                    #f.write(json.dumps(G_roster, indent=4))
+                    #f.close()
 
  
