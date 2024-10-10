@@ -36,11 +36,11 @@ def display_tasks(emails: set, statuses: set, subteam: str) -> str:
         return
 
     display_url = f"https://api.clickup.com/api/v2/team/9011117189/task?{'&'.join(['statuses[]=' + x.replace(' ', '+') for x in statuses])}&lists[]={'&lists[]='.join(subteams[subteam])}&page=0"
+    print(display_url)
 
     apiFINDReq = Request(
         "GET",
         display_url, 
-        data=json.dumps({"test": True}).encode(), 
         headers={"Authorization": CLICKUP_API_KEY}
     ) #test if login required works
     apiFINDReq = apiFINDReq.prepare()
@@ -53,6 +53,7 @@ def display_tasks(emails: set, statuses: set, subteam: str) -> str:
          timeout=None
     )
 
+    print(res)
     res = json.loads(res.text)["tasks"]
 
     return [task(x.get("name"), x.get("status"), x.get("assignees"), x.get("due_date")) for x in res if [z["email"] for z in x["assignees"] if z["email"] in emails]]

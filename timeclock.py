@@ -151,7 +151,7 @@ if __name__ == "__main__":
     #heavily inspired by stack overflow
 
     frameCnt = 6
-    frames = [PhotoImage(file = mypath + "loadingbison.gif",format = 'gif -index %i' %(i)) for i in range(frameCnt)]
+    frames = [PhotoImage(file = mypath + "loadingBison.gif",format = 'gif -index %i' %(i)) for i in range(frameCnt)]
 
     def update(ind):
         frame = frames[ind]
