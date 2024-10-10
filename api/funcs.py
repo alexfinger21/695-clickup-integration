@@ -35,7 +35,7 @@ def display_tasks(emails: set, statuses: set, subteam: str) -> str:
         warnings.warn("User has empty email")
         return
 
-    display_url = f"https://api.clickup.com/api/v2/team/9011117189/task?{'&'.join(['statuses[]=' + x.replace(' ', '+') for x in statuses])}&lists[]={'&lists[]='.join(subteams[subteam])}&page=0"
+    display_url = f"https://api.clickup.com/api/v2/team/9011117189/task?{'&'.join(['statuses[]=' + x.replace(' ', '+') for x in statuses])}&lists[]={'&lists[]='.join(subteams[subteam if subteam else "Fabrication"])}&page=0"
     print(display_url)
 
     apiFINDReq = Request(

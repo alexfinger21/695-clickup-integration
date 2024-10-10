@@ -338,7 +338,7 @@ if __name__ == "__main__":
                             task_queue.put_nowait(("TO_DO", todo_tasks_str if todo_tasks_str else "To Do: None"))
                             task_queue.put_nowait(("IN_PROGRESS", inprogress_tasks_str if inprogress_tasks_str else "In Progress: None"))
                             task_queue.put_nowait("TASKS_LOADED")
-                            
+
 
                         new_thread = threading.Thread(target=task_thread)
                         new_thread.start()
