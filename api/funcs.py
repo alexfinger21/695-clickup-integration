@@ -1,5 +1,6 @@
 import json
 import os
+import requests
 from requests import Request, Session
 import warnings
 import datetime
@@ -29,32 +30,32 @@ class task:
         #return "task here!"
         return (f"({self.due_date}) " if self.due_date else "") + self.name
 
+# finds the tasks from the cache.json file
 def display_tasks(emails: set, statuses: set, subteam: str) -> str:
     print(subteam)
     if(len(emails) == 0):
         warnings.warn("User has empty email")
         return
 
-    display_url = f"https://api.clickup.com/api/v2/team/9011117189/task?{'&'.join(['statuses[]=' + x.replace(' ', '+') for x in statuses])}&lists[]={'&lists[]='.join(subteams[subteam if subteam else 'Fabrication'])}&page=0"
-    print(display_url)
-
-    apiFINDReq = Request(
-        "GET",
-        display_url, 
-        headers={"Authorization": CLICKUP_API_KEY}
-    ) #test if login required works
-    apiFINDReq = apiFINDReq.prepare()
-
-    res = s.send(apiFINDReq, 
-         stream={}, 
-         verify=True, 
-         proxies=None, 
-         cert=None, 
-         timeout=None
-    )
+    with open("cache.json", "r") as file:
+        res = json.load(file)["tasks"]
 
     print(res)
-    res = json.loads(res.text)["tasks"]
-
     return [task(x.get("name"), x.get("status"), x.get("assignees"), x.get("due_date")) for x in res if [z["email"] for z in x["assignees"] if z["email"] in emails]]
 
+# writes the current tasks to the cache.json file
+def cache_tasks():
+    display_url = "https://api.clickup.com/api/v2/team/9011117189/task"
+    headers = {
+        'Authorization': CLICKUP_API_KEY,
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.get(display_url, headers=headers)
+
+    tasks = response.json()
+    tasks_json = json.dumps(tasks, indent=4, sort_keys=True)
+
+    with open("cache.json", "w") as file:
+        file.write(tasks_json)
+        print("cached")

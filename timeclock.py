@@ -19,6 +19,9 @@ import threading
 import queue
 import datetime
 
+# for caching the tasks at certain times
+import schedule
+
 # imports for UI
 from tkinter import *
 from tkinter import ttk
@@ -53,6 +56,13 @@ def keydown(e):
         key_queue.put('2')
         key_queue.put('8')
         key_queue.put('0')
+
+# init json file
+api.funcs.cache_tasks()
+
+# update once an hour
+schedule.every().hour.do(api.funcs.cache_tasks)
+
 
 if __name__ == "__main__":
 
@@ -192,6 +202,7 @@ if __name__ == "__main__":
     # main program loop
     user_id = ""
     while True:
+        schedule.run_pending() # actual schedule loop
 
         # run this loop every 100 msec for timely barcode clock in/out processing
         # keep window at the foreground
