@@ -60,8 +60,9 @@ def keydown(e):
 # init json file
 api.funcs.cache_tasks()
 
-# update once an hour
-schedule.every().hour.do(api.funcs.cache_tasks)
+# update thurs 6:00 pm and saturday 
+schedule.every().thursday.at("18:00").do(api.funcs.cache_tasks)
+schedule.every().saturday.at("08:00").do(api.funcs.cache_tasks)
 
 
 if __name__ == "__main__":
