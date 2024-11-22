@@ -41,7 +41,8 @@ def display_tasks(emails: set, statuses: set, subteam: str) -> str:
         res = json.load(file)["tasks"]
 
 
-    all_subteam_tasks = [task(x.get("name"), x.get("status"), x.get("assignees"), x.get("due_date")) for x in res if x["list"]["id"] in subteams[subteam] and len(x["assignees"]) == 0]
+    all_subteam_tasks = [task(x.get("name"), x.get("status"), x.get("assignees"), x.get("due_date")) for x in res if x["list"]["id"] in subteams[subteam] and len(x["assignees"]) == 0] if len(subteam) else []
+
     return [all_subteam_tasks, [task(x.get("name"), x.get("status"), x.get("assignees"), x.get("due_date")) for x in res if [z["email"] for z in x["assignees"] if z["email"] in emails]]]
 
 # writes the current tasks to the cache.json file
