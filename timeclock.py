@@ -144,6 +144,8 @@ if __name__ == "__main__":
     todo_name=StringVar()
     inprogress_tasks=StringVar()
     inprogress_name=StringVar()
+    subteam_tasks=StringVar()
+    subteam_name=StringVar()
 
     #NOTE: Task Display UI
     tasks_header = Label(G_main, textvariable=current_user, bg="black", fg="white", font='Arial 11', anchor='center')
@@ -156,6 +158,10 @@ if __name__ == "__main__":
     todo_header.place(relx=0.72, rely=0.465)
     todo_label = Label(G_main, textvariable=todo_tasks, bg="black", fg="#c1c1c1", font='Arial 11', anchor='e', justify="left", wraplength=360)
     todo_label.place(relx=0.55, rely=0.52)
+    subteam_header = Label(G_main, textvariable=subteam_name, bg="black", fg="#c1c1c1", font='Arial 11', anchor='center', justify="left", wraplength=360)
+    subteam_header.place(relx=0.42, rely=0.79)
+    subteam_label = Label(G_main, textvariable=subteam_tasks, bg="black", fg="#c1c1c1", font='Arial 11', anchor='center', justify="left", wraplength=360)
+    subteam_label.place(relx=0.40, rely=0.82)
 
     #NOTE: Loading bar animation
     #HAND ANIMATING THE GIF BECUASE TKINTER DEVS ARE LAZY
@@ -280,6 +286,9 @@ if __name__ == "__main__":
                     elif item[0] == "IN_PROGRESS":
                         inprogress_name.set("In Progress")
                         inprogress_tasks.set(item[1])
+                    elif item[0] == "SUBTEAM":
+                        subteam_name.set(f"General {G_member['Survey2024']} Tasks")
+                        subteam_tasks.set(item[1])
         except queue.Empty:
             pass  # Queue is empty, continue with the next iteration
 
@@ -330,9 +339,9 @@ if __name__ == "__main__":
                         # display all tasks for all emails for student
                         def task_thread():
                             user = user_name
-                            tasks = sorted(api.funcs.display_tasks(getStudentEmails(G_member), {"in progress", "to do"}, G_member["Survey2024"]) or "", key=sortTasks)
-
-                            
+                            tasks = api.funcs.display_tasks(getStudentEmails(G_member), {"in progress", "to do"}, G_member["Survey2024"]) or ""
+                            st_tasks = sorted(tasks[0], key=sortTasks)[:3]
+                            usr_tasks = sorted(tasks[1], key=sortTasks)[:6]
 
                             if user == user_name:
                                 while not task_queue.empty():
@@ -340,11 +349,13 @@ if __name__ == "__main__":
                             else:
                                 return
 
-                            todo_tasks_str = "\n".join([str(task) for task in tasks if task.status.get("status")=="to do"])
-                            inprogress_tasks_str = "\n".join([str(task) for task in tasks if task.status.get("status")=="in progress"])
+                            todo_tasks_str = "\n".join([str(task) for task in usr_tasks if task.status.get("status")=="to do"])
+                            inprogress_tasks_str = "\n".join([str(task) for task in usr_tasks if task.status.get("status")=="in progress"])
+                            st_tasks_str = "\n".join([str(task) for task in st_tasks])
 
                             task_queue.put_nowait(("TO_DO", todo_tasks_str if todo_tasks_str else "To Do: None"))
                             task_queue.put_nowait(("IN_PROGRESS", inprogress_tasks_str if inprogress_tasks_str else "In Progress: None"))
+                            task_queue.put_nowait(("SUBTEAM", st_tasks_str if st_tasks_str else "None"))
                             task_queue.put_nowait("TASKS_LOADED")
 
                             
@@ -363,10 +374,12 @@ if __name__ == "__main__":
                         #reset task display
                         todo_tasks.set("")
                         inprogress_tasks.set("")
+                        subteam_tasks.set("")
 
                         #reset headers
                         todo_name.set("")
                         inprogress_name.set("")
+                        subteam_name.set("")
 
 
                         G_member["ClockOut"] = datetime.datetime.now().strftime(timeformat)

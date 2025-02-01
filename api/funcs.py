@@ -28,7 +28,7 @@ class task:
 
     def __str__(self):
         #return "task here!"
-        return (f"({self.due_date}) " if self.due_date else "") + self.name
+        return "* " + (f"({self.due_date}) " if self.due_date else "") + self.name
 
 # finds the tasks from the cache.json file
 def display_tasks(emails: set, statuses: set, subteam: str) -> str:
@@ -40,8 +40,10 @@ def display_tasks(emails: set, statuses: set, subteam: str) -> str:
     with open("cache.json", "r") as file:
         res = json.load(file)["tasks"]
 
-    print(res)
-    return [task(x.get("name"), x.get("status"), x.get("assignees"), x.get("due_date")) for x in res if [z["email"] for z in x["assignees"] if z["email"] in emails]]
+
+    all_subteam_tasks = [task(x.get("name"), x.get("status"), x.get("assignees"), x.get("due_date")) for x in res if x["list"]["id"] in subteams[subteam] and len(x["assignees"]) == 0] if len(subteam) else []
+
+    return [all_subteam_tasks, [task(x.get("name"), x.get("status"), x.get("assignees"), x.get("due_date")) for x in res if [z["email"] for z in x["assignees"] if z["email"] in emails]]]
 
 # writes the current tasks to the cache.json file
 def cache_tasks():
