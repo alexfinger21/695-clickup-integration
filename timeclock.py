@@ -61,9 +61,9 @@ def keydown(e):
 api.funcs.cache_tasks()
 
 # update thurs 6:00 pm and saturday 
-schedule.every().thursday.at("18:00").do(api.funcs.cache_tasks)
-schedule.every().saturday.at("08:00").do(api.funcs.cache_tasks)
-
+schedule.every().day.at("15:00").do(api.funcs.cache_tasks)
+schedule.every().saturday.at("09:00").do(api.funcs.cache_tasks)
+schedule.every().sunday.at("09:00").do(api.funcs.cache_tasks)
 
 if __name__ == "__main__":
 
