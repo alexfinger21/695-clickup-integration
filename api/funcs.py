@@ -47,6 +47,7 @@ def display_tasks(emails: set, statuses: set, subteam: str) -> str:
 
 # writes the current tasks to the cache.json file
 def cache_tasks():
+    print("===> Caching tasks...")
     display_url = "https://api.clickup.com/api/v2/team/9011117189/task"
     headers = {
         'Authorization': CLICKUP_API_KEY,
@@ -60,4 +61,4 @@ def cache_tasks():
 
     with open("cache.json", "w") as file:
         file.write(tasks_json)
-        print("cached")
+        print("==> Tasks successfully cached")

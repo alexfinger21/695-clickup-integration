@@ -29,6 +29,9 @@ from tkinter import ttk
 # import clickup API
 import api.funcs
 
+# import roster loading
+from api.load_roster import load_roster
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -66,7 +69,7 @@ schedule.every().saturday.at("09:00").do(api.funcs.cache_tasks)
 schedule.every().sunday.at("09:00").do(api.funcs.cache_tasks)
 
 if __name__ == "__main__":
-
+    print("===> Starting Time Clock Application")
     if os.environ.get('DISPLAY','') == '':
         print('no display found. Using :0.0')
         os.environ.__setitem__('DISPLAY', ':0.0')
@@ -76,6 +79,7 @@ if __name__ == "__main__":
     timeformat = "%Y-%m-%d %H:%M:%S"
     key_queue = queue.Queue()
 
+    # Variables for screen
     clockx = 1
     clockdx = 6
     clocky = 1
@@ -85,14 +89,26 @@ if __name__ == "__main__":
     task_queue = queue.Queue()
 
     user_name = ""
-
+    
+    print("==> Setting credentials")
     # set our credentials to access google docs
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name(mypath + 'client_secret_695.json', scope)
     client = gspread.authorize(creds)
+    print("==> Credentials set")
+
+    # DEBUGGING (Checking accessible sheets)
+    for sheet in client.openall():
+        print("Accessible:", sheet.title)
+    
 
     # open workbook
+    print("==> Opening workbook")
     G_workbook = client.open(os.getenv("G_WORKBOOK_NAME"))
+    print("==> Workbook opened")
+    
+    # DEBUGGING (Checking available tabs/worksheets)
+    print("Worksheets:", [ws.title for ws in G_workbook.worksheets()])
 
     # get workbook tabs
     G_sheet_roster = G_workbook.worksheet(os.getenv("G_SHEET_NAME"))
@@ -100,30 +116,15 @@ if __name__ == "__main__":
 
     # roster memory structure
     G_roster = {}
+    G_roster = load_roster(mypath, G_sheet_roster) # try loading from local file first, then google
 
-    # try loading from local json
-    try:
-        f = open(mypath + "roster.json", "r")
-        G_roster = json.load(f)
-        f.close()
-        print("Roster loaded from local file roster.json.  Delete to load from google.")
-    except:
-        G_roster = G_sheet_roster.get_all_records()
-        print("Local file roster.json not found.  Roster loaded from google.")
-
-        # fixup numerics to strings for later comparisons
-        for member in G_roster:
-            member["BarcodeID"] = str(member["BarcodeID"])
-            print(member["BarcodeID"])
-            #member["StudentCell"] = str(member["StudentCell"])
-            #member["ParentCell"] = str(member["ParentCell"])
-
+    # main window
     rows, cols = (3, 16)
     arr = rows * [[0] * cols]
     G_main = Tk()
     G_main.configure(cursor="none", background="black")
     G_main.attributes("-fullscreen", True)
-    G_main.geometry("800x480")
+    G_main.geometry("800x480") # pi screen is 800x480
     G_main.bind("<KeyPress>", keydown)
     clock = Label(G_main, text="00:00:00", bg="black", anchor='w')
     who = Label(G_main, text="Who's here today", fg="SteelBlue1", bg="black", font='Arial 20 bold', anchor='w')
@@ -133,7 +134,7 @@ if __name__ == "__main__":
     imagelab = Label(G_main, image=image, borderwidth=0)
 
     G_win = Toplevel(G_main)
-    G_win.geometry("769x97") # pi screen is 800x480
+    G_win.geometry("") # was (769x97) but i set to empty because it autosizes correctly
     G_win.configure(cursor="none", background="tan4")
     G_win.transient(G_main)
     G_win.overrideredirect(1)
@@ -164,10 +165,8 @@ if __name__ == "__main__":
     subteam_label.place(relx=0.40, rely=0.82)
 
     #NOTE: Loading bar animation
-    #HAND ANIMATING THE GIF BECUASE TKINTER DEVS ARE LAZY
-    #heavily inspired by stack overflow
-
-    frameCnt = 6
+    # Hand animating gif as tkinter doesn't support animated gifs by default
+    frameCnt = 6 # num of frames in gif
     frames = [PhotoImage(file = mypath + "loadingBison.gif",format = 'gif -index %i' %(i)) for i in range(frameCnt)]
 
     def update(ind):
@@ -209,7 +208,7 @@ if __name__ == "__main__":
     # main program loop
     user_id = ""
     while True:
-        schedule.run_pending() # actual schedule loop
+        schedule.run_pending() # schedule loop
 
         # run this loop every 100 msec for timely barcode clock in/out processing
         # keep window at the foreground
@@ -278,7 +277,7 @@ if __name__ == "__main__":
             while not task_queue.empty():
                 item = task_queue.get_nowait()
                 if item == "TASKS_LOADED":
-                    loadingImageLab.place_forget()
+                    loadingImageLab.place_forget() # forget where the image is
                 elif isinstance(item, tuple):
                     if item[0] == "TO_DO":
                         todo_name.set("To Do")
@@ -381,8 +380,10 @@ if __name__ == "__main__":
                         inprogress_name.set("")
                         subteam_name.set("")
 
-
+                        # clock out
                         G_member["ClockOut"] = datetime.datetime.now().strftime(timeformat)
+
+                        # compute change in time and write to log file
                         delta = datetime.datetime.strptime(G_member["ClockOut"], timeformat) - datetime.datetime.strptime(G_member["ClockIn"], timeformat)
                         l = G_member["BarcodeID"] + "\t" + G_member["StudentFirst"] + "\t" + G_member["ClockIn"] + "\t" + G_member["ClockOut"] + "\t" + str(delta.total_seconds()) + "\r\n"
                         f = open(mypath + "logs/{d.year}{d.month:02}{d.day:02}.log".format(d=datetime.datetime.now()), "a")
