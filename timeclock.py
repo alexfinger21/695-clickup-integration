@@ -286,7 +286,7 @@ if __name__ == "__main__":
                         inprogress_name.set("In Progress")
                         inprogress_tasks.set(item[1])
                     elif item[0] == "SUBTEAM":
-                        subteam_name.set(f"General {G_member['Survey2024']} Tasks")
+                        subteam_name.set(f"General {G_member['Subteam']} Tasks")
                         subteam_tasks.set(item[1])
         except queue.Empty:
             pass  # Queue is empty, continue with the next iteration
@@ -338,7 +338,7 @@ if __name__ == "__main__":
                         # display all tasks for all emails for student
                         def task_thread():
                             user = user_name
-                            tasks = api.funcs.display_tasks(getStudentEmails(G_member), {"in progress", "to do"}, G_member["Survey2024"]) or ""
+                            tasks = api.funcs.display_tasks(getStudentEmails(G_member), {"in progress", "to do"}, G_member["Subteam"]) or ""
                             st_tasks = sorted(tasks[0], key=sortTasks)[:3]
                             usr_tasks = sorted(tasks[1], key=sortTasks)[:6]
 
@@ -356,9 +356,9 @@ if __name__ == "__main__":
                             task_queue.put_nowait(("IN_PROGRESS", inprogress_tasks_str if inprogress_tasks_str else "In Progress: None"))
                             task_queue.put_nowait(("SUBTEAM", st_tasks_str if st_tasks_str else "None"))
                             task_queue.put_nowait("TASKS_LOADED")
-
                             
 
+                            
 
                         new_thread = threading.Thread(target=task_thread)
                         new_thread.start()
