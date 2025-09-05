@@ -394,6 +394,9 @@ if __name__ == "__main__":
                         del G_member["ClockIn"]
                         del G_member["ClockOut"]
 
+                        
+
+
                     f = open(mypath + "roster.json", "w")
                     f.write(json.dumps(G_roster, indent=4))
                     f.close()
